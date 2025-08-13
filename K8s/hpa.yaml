@@ -1,0 +1,33 @@
+kind: HorizontalPodAutoscaler
+apiVersion: autoscaling/v2
+metadata:
+  name: load-gen
+spec:
+  scaleTargetRef:
+    kind: Deployment
+    apiVersion: apps/v1
+    name: load-gen
+  minReplicas: 1
+  maxReplicas: 10
+  behavior:
+    scaleUp:
+      stabilizationWindowSeconds: 0 # Scale up immediately
+      policies:
+        - type: Pods
+          value: 4 # Add up to N pods
+          periodSeconds: 60 # within M seconds
+    scaleDown:
+      stabilizationWindowSeconds: 150 # Scale up after 2.5 minutes
+      policies: 
+        - type: Percent
+          value: 50 # Reduce the number of pods by N%
+          periodSeconds: 60 # within M seconds
+  metrics:
+    - type: Resource
+      resource: 
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
+
+

@@ -1,0 +1,50 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: load-gen
+  labels: 
+    app: load-gen
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: load-gen
+  template:
+    metadata:
+      labels:
+        app: load-gen
+    spec:
+      containers:
+        - name: load-gen
+          image: jgaonaakm/load-gen:0.0.2
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+              name: http
+          env:
+            - name: MAX_CPU_THREADS
+              value: "4"               # Max threads
+            - name: MAX_MEM_MB
+              value: "4096"             # 4GB
+            - name: MAX_DURATION_SEC
+              value: "1800"             # 30min
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: load-gen
+  labels:
+    app: load-gen
+spec:
+  type: ClusterIP
+  selector:
+    app: load-gen
+  ports:
+    - name: web
+      port: 80
+      targetPort: http
+
