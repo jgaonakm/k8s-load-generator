@@ -21,4 +21,5 @@ if (app.Environment.IsDevelopment())
 
 app.MapControllers();
 
+app.MapGet("/", () => Results.Ok("LKE Load generation API"));
 app.Run();
